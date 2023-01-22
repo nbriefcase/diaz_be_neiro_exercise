@@ -23,15 +23,15 @@ public class RolesServiceImpl implements RolesService {
 
     public static final String DEFAULT_ROLE = "Developer";
 
-    @Lazy
-    @Autowired
-    private MembershipsService membershipsService;
+    private final MembershipsService membershipsService;
     private final RoleRepository roleRepository;
 
     @Autowired
     public RolesServiceImpl(
-            RoleRepository roleRepository) {
+            RoleRepository roleRepository,
+            @Lazy MembershipsService membershipsService) {
         this.roleRepository = roleRepository;
+        this.membershipsService = membershipsService;
     }
 
     @Override
