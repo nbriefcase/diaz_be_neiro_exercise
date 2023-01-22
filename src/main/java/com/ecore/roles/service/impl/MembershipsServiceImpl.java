@@ -50,12 +50,7 @@ public class MembershipsServiceImpl implements MembershipsService {
             throw new ResourceExistsException(Membership.class);
         }
 
-        Optional.ofNullable(teamsService.getTeam(m.getTeamId()))
-                .orElseThrow(() -> new ResourceNotFoundException(Team.class, m.getTeamId()))
-                .getTeamMemberIds().stream().filter(memberId -> memberId.equals(m.getUserId()))
-                .findFirst()
-                .orElseThrow(() -> new InvalidArgumentException(Membership.class,
-                        "The provided user doesn't belong to the provided team."));
+        validateMembership(m.getUserId(), m.getTeamId());
 
         rolesService.GetRole(roleId);
         return membershipRepository.save(m);
@@ -64,5 +59,20 @@ public class MembershipsServiceImpl implements MembershipsService {
     @Override
     public List<Membership> getMemberships(@NonNull UUID rid) {
         return membershipRepository.findByRoleId(rid);
+    }
+
+    @Override
+    public Optional<Membership> getMembership(UUID teamMemberId, UUID teamId) {
+        validateMembership(teamMemberId, teamId);
+        return membershipRepository.findByUserIdAndTeamId(teamMemberId, teamId);
+    }
+
+    private void validateMembership(UUID teamMemberId, UUID teamId) {
+        Optional.ofNullable(teamsService.getTeam(teamId))
+                .orElseThrow(() -> new ResourceNotFoundException(Team.class, teamId))
+                .getTeamMemberIds().stream().filter(memberId -> memberId.equals(teamMemberId))
+                .findFirst()
+                .orElseThrow(() -> new InvalidArgumentException(Membership.class,
+                        "The provided user doesn't belong to the provided team."));
     }
 }

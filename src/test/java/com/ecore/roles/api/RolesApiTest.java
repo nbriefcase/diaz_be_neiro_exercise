@@ -94,6 +94,7 @@ public class RolesApiTest {
     @Test
     void shouldFailToCreateNewRoleWhenBlankName() {
         createRole(Role.builder().name("").build())
+
                 .validate(400, "Bad Request");
     }
 
