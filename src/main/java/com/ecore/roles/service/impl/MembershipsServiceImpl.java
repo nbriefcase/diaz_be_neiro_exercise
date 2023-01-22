@@ -52,7 +52,7 @@ public class MembershipsServiceImpl implements MembershipsService {
 
         validateMembership(m.getUserId(), m.getTeamId());
 
-        rolesService.GetRole(roleId);
+        rolesService.getRole(roleId);
         return membershipRepository.save(m);
     }
 

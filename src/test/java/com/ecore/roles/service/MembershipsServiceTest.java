@@ -21,8 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class MembershipsServiceTest {
@@ -41,7 +41,7 @@ class MembershipsServiceTest {
     @Test
     public void shouldCreateMembership() {
         Membership expectedMembership = DEFAULT_MEMBERSHIP();
-        when(rolesService.GetRole(expectedMembership.getRole().getId()))
+        when(rolesService.getRole(expectedMembership.getRole().getId()))
                 .thenReturn(DEVELOPER_ROLE());
         when(membershipRepository.findByUserIdAndTeamId(expectedMembership.getUserId(),
                 expectedMembership.getTeamId()))
@@ -57,7 +57,7 @@ class MembershipsServiceTest {
 
         assertNotNull(actualMembership);
         assertEquals(actualMembership, expectedMembership);
-        verify(rolesService).GetRole(expectedMembership.getRole().getId());
+        verify(rolesService).getRole(expectedMembership.getRole().getId());
     }
 
     @Test
@@ -77,7 +77,7 @@ class MembershipsServiceTest {
                 () -> membershipsService.assignRoleToMembership(expectedMembership));
 
         assertEquals("Membership already exists", exception.getMessage());
-        verify(rolesService, times(0)).GetRole(any());
+        verify(rolesService, times(0)).getRole(any());
         verify(usersService, times(0)).getUser(any());
         verify(teamsService, times(0)).getTeam(any());
     }
@@ -92,7 +92,7 @@ class MembershipsServiceTest {
 
         assertEquals("Invalid 'Role' object", exception.getMessage());
         verify(membershipRepository, times(0)).findByUserIdAndTeamId(any(), any());
-        verify(rolesService, times(0)).GetRole(any());
+        verify(rolesService, times(0)).getRole(any());
         verify(usersService, times(0)).getUser(any());
         verify(teamsService, times(0)).getTeam(any());
     }

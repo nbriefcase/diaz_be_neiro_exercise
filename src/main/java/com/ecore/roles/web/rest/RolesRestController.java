@@ -6,6 +6,7 @@ import com.ecore.roles.web.RolesApi;
 import com.ecore.roles.web.dto.RoleDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,55 +32,55 @@ public class RolesRestController implements RolesApi {
 
     @Override
     @PostMapping(
-            consumes = {"application/json"},
-            produces = {"application/json"})
+            consumes = {MediaType.APPLICATION_JSON_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<RoleDto> createRole(
             @Valid @RequestBody RoleDto role) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(fromModel(rolesService.CreateRole(role.toModel())));
+                .body(fromModel(rolesService.createRole(role.toModel())));
     }
 
     @Override
     @GetMapping(
-            produces = {"application/json"})
+            produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<RoleDto>> getRoles() {
 
-        List<Role> getRoles = rolesService.GetRoles();
+        List<Role> roles = rolesService.getRoles();
 
         List<RoleDto> roleDtoList = new ArrayList<>();
 
-        for (Role role : getRoles) {
+        for (Role role : roles) {
             RoleDto roleDto = fromModel(role);
             roleDtoList.add(roleDto);
         }
 
         return ResponseEntity
-                .status(200)
+                .status(HttpStatus.OK)
                 .body(roleDtoList);
     }
 
     @Override
     @GetMapping(
             path = "/{roleId}",
-            produces = {"application/json"})
+            produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<RoleDto> getRole(
             @PathVariable UUID roleId) {
         return ResponseEntity
-                .status(200)
-                .body(fromModel(rolesService.GetRole(roleId)));
+                .status(HttpStatus.OK)
+                .body(fromModel(rolesService.getRole(roleId)));
     }
 
     @Override
     @GetMapping(
             path = "/search",
-            produces = {"application/json"})
+            produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<RoleDto> getRole(
             @RequestParam UUID teamMemberId,
             @RequestParam UUID teamId) {
 
         return ResponseEntity
-                .status(200)
+                .status(HttpStatus.OK)
                 .body(fromModel(rolesService.getRole(teamMemberId, teamId)));
     }
 
