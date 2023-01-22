@@ -26,11 +26,6 @@ public class DefaultExceptionHandler {
         return createResponse(400, exception.getMessage());
     }
 
-    @ExceptionHandler
-    public ResponseEntity<ErrorResponse> handle(IllegalStateException exception) {
-        return createResponse(500, exception.getMessage());
-    }
-
     private ResponseEntity<ErrorResponse> createResponse(int status, String exception) {
         return ResponseEntity
                 .status(status)

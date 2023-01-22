@@ -1,6 +1,5 @@
 package com.ecore.roles.service;
 
-import com.ecore.roles.exception.InvalidArgumentException;
 import com.ecore.roles.exception.ResourceNotFoundException;
 import com.ecore.roles.model.Membership;
 import com.ecore.roles.model.Role;
@@ -82,6 +81,12 @@ class RolesServiceTest {
     }
 
     @Test
+    public void shouldFailToGetRoleWhenRoleIdIsNull() {
+        assertThrows(NullPointerException.class,
+                () -> rolesService.getRole(null));
+    }
+
+    @Test
     public void shouldReturnRoleWhenMembershipExists() {
         Membership membership = DEFAULT_MEMBERSHIP();
         when(membershipsService.getMembership(any(), any())).thenReturn(Optional.of(membership));
@@ -96,11 +101,22 @@ class RolesServiceTest {
     public void shouldFailToGetRoleWhenMembershipDoesNotExists() {
         when(membershipsService.getMembership(any(), any())).thenReturn(Optional.empty());
 
-        InvalidArgumentException exception = assertThrows(InvalidArgumentException.class,
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
                 () -> rolesService.getRole(GIANNI_USER_UUID, ORDINARY_CORAL_LYNX_TEAM_UUID));
 
-        assertEquals("Invalid 'Membership' object. The provided user doesn't belong to the provided team.",
-                exception.getMessage());
+        assertEquals("Role not found", exception.getMessage());
+    }
+
+    @Test
+    public void shouldFailToGetRoleWhenTeamMemberIdIsNull() {
+        assertThrows(NullPointerException.class,
+                () -> rolesService.getRole(null, ORDINARY_CORAL_LYNX_TEAM_UUID));
+    }
+
+    @Test
+    public void shouldFailToGetRoleWhenTeamIdIsNull() {
+        assertThrows(NullPointerException.class,
+                () -> rolesService.getRole(GIANNI_USER_UUID, null));
     }
 
 }

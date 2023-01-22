@@ -1,6 +1,5 @@
 package com.ecore.roles.service.impl;
 
-import com.ecore.roles.exception.InvalidArgumentException;
 import com.ecore.roles.exception.ResourceExistsException;
 import com.ecore.roles.exception.ResourceNotFoundException;
 import com.ecore.roles.model.Membership;
@@ -20,8 +19,6 @@ import java.util.UUID;
 @Log4j2
 @Service
 public class RolesServiceImpl implements RolesService {
-
-    public static final String DEFAULT_ROLE = "Developer";
 
     private final MembershipsService membershipsService;
     private final RoleRepository roleRepository;
@@ -54,15 +51,10 @@ public class RolesServiceImpl implements RolesService {
     }
 
     @Override
-    public Role getRole(UUID teamMemberId, UUID teamId) {
+    public Role getRole(@NonNull UUID teamMemberId, @NonNull UUID teamId) {
         Membership membership = membershipsService.getMembership(teamMemberId, teamId)
-                .orElseThrow(() -> new InvalidArgumentException(Membership.class,
-                        "The provided user doesn't belong to the provided team."));
+                .orElseThrow(() -> new ResourceNotFoundException(Role.class));
         return membership.getRole();
     }
 
-    private Role getDefaultRole() {
-        return roleRepository.findByName(DEFAULT_ROLE)
-                .orElseThrow(() -> new IllegalStateException("Default role is not configured"));
-    }
 }
