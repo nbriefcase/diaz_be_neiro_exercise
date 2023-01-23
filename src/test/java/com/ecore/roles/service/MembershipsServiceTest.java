@@ -4,7 +4,6 @@ import com.ecore.roles.exception.InvalidArgumentException;
 import com.ecore.roles.exception.ResourceExistsException;
 import com.ecore.roles.model.Membership;
 import com.ecore.roles.repository.MembershipRepository;
-import com.ecore.roles.repository.RoleRepository;
 import com.ecore.roles.service.impl.MembershipsServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,13 +15,14 @@ import java.util.Optional;
 
 import static com.ecore.roles.utils.TestData.DEFAULT_MEMBERSHIP;
 import static com.ecore.roles.utils.TestData.DEVELOPER_ROLE;
+import static com.ecore.roles.utils.TestData.ORDINARY_CORAL_LYNX_TEAM;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class MembershipsServiceTest {
@@ -32,7 +32,7 @@ class MembershipsServiceTest {
     @Mock
     private MembershipRepository membershipRepository;
     @Mock
-    private RoleRepository roleRepository;
+    private RolesService rolesService;
     @Mock
     private UsersService usersService;
     @Mock
@@ -41,8 +41,8 @@ class MembershipsServiceTest {
     @Test
     public void shouldCreateMembership() {
         Membership expectedMembership = DEFAULT_MEMBERSHIP();
-        when(roleRepository.findById(expectedMembership.getRole().getId()))
-                .thenReturn(Optional.ofNullable(DEVELOPER_ROLE()));
+        when(rolesService.getRole(expectedMembership.getRole().getId()))
+                .thenReturn(DEVELOPER_ROLE());
         when(membershipRepository.findByUserIdAndTeamId(expectedMembership.getUserId(),
                 expectedMembership.getTeamId()))
                         .thenReturn(Optional.empty());
@@ -50,11 +50,14 @@ class MembershipsServiceTest {
                 .save(expectedMembership))
                         .thenReturn(expectedMembership);
 
+        when(teamsService.getTeam(expectedMembership.getTeamId()))
+                .thenReturn(ORDINARY_CORAL_LYNX_TEAM());
+
         Membership actualMembership = membershipsService.assignRoleToMembership(expectedMembership);
 
         assertNotNull(actualMembership);
         assertEquals(actualMembership, expectedMembership);
-        verify(roleRepository).findById(expectedMembership.getRole().getId());
+        verify(rolesService).getRole(expectedMembership.getRole().getId());
     }
 
     @Test
@@ -74,7 +77,7 @@ class MembershipsServiceTest {
                 () -> membershipsService.assignRoleToMembership(expectedMembership));
 
         assertEquals("Membership already exists", exception.getMessage());
-        verify(roleRepository, times(0)).getById(any());
+        verify(rolesService, times(0)).getRole(any());
         verify(usersService, times(0)).getUser(any());
         verify(teamsService, times(0)).getTeam(any());
     }
@@ -89,7 +92,7 @@ class MembershipsServiceTest {
 
         assertEquals("Invalid 'Role' object", exception.getMessage());
         verify(membershipRepository, times(0)).findByUserIdAndTeamId(any(), any());
-        verify(roleRepository, times(0)).getById(any());
+        verify(rolesService, times(0)).getRole(any());
         verify(usersService, times(0)).getUser(any());
         verify(teamsService, times(0)).getTeam(any());
     }

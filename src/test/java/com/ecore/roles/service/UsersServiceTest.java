@@ -3,6 +3,7 @@ package com.ecore.roles.service;
 import com.ecore.roles.client.UsersClient;
 import com.ecore.roles.client.model.User;
 import com.ecore.roles.service.impl.UsersServiceImpl;
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -10,6 +11,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import java.util.ArrayList;
 
 import static com.ecore.roles.utils.TestData.GIANNI_USER;
 import static com.ecore.roles.utils.TestData.UUID_1;
@@ -33,5 +36,15 @@ class UsersServiceTest {
                         .body(gianniUser));
 
         assertNotNull(usersService.getUser(UUID_1));
+    }
+
+    @Test
+    void shouldGetUserList() {
+        ArrayList<User> userList = Lists.newArrayList();
+        when(usersClient.getUsers())
+                .thenReturn(ResponseEntity
+                        .status(HttpStatus.OK)
+                        .body(userList));
+        assertNotNull(usersService.getUsers());
     }
 }

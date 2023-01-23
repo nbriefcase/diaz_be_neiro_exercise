@@ -159,4 +159,5 @@ public class RolesApiTest {
         getRole(GIANNI_USER_UUID, UUID_1)
                 .validate(404, format("Team %s not found", UUID_1));
     }
+
 }

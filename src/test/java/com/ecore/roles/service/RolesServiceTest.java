@@ -1,6 +1,7 @@
 package com.ecore.roles.service;
 
 import com.ecore.roles.exception.ResourceNotFoundException;
+import com.ecore.roles.model.Membership;
 import com.ecore.roles.model.Role;
 import com.ecore.roles.repository.MembershipRepository;
 import com.ecore.roles.repository.RoleRepository;
@@ -13,12 +14,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static com.ecore.roles.utils.TestData.DEFAULT_MEMBERSHIP;
 import static com.ecore.roles.utils.TestData.DEVELOPER_ROLE;
+import static com.ecore.roles.utils.TestData.GIANNI_USER_UUID;
+import static com.ecore.roles.utils.TestData.ORDINARY_CORAL_LYNX_TEAM_UUID;
 import static com.ecore.roles.utils.TestData.UUID_1;
 import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,12 +41,15 @@ class RolesServiceTest {
     @Mock
     private MembershipsService membershipsService;
 
+    @Mock
+    private TeamsService teamsService;
+
     @Test
     public void shouldCreateRole() {
         Role developerRole = DEVELOPER_ROLE();
         when(roleRepository.save(developerRole)).thenReturn(developerRole);
 
-        Role role = rolesService.CreateRole(developerRole);
+        Role role = rolesService.createRole(developerRole);
 
         assertNotNull(role);
         assertEquals(developerRole, role);
@@ -50,7 +58,7 @@ class RolesServiceTest {
     @Test
     public void shouldFailToCreateRoleWhenRoleIsNull() {
         assertThrows(NullPointerException.class,
-                () -> rolesService.CreateRole(null));
+                () -> rolesService.createRole(null));
     }
 
     @Test
@@ -58,7 +66,7 @@ class RolesServiceTest {
         Role developerRole = DEVELOPER_ROLE();
         when(roleRepository.findById(developerRole.getId())).thenReturn(Optional.of(developerRole));
 
-        Role role = rolesService.GetRole(developerRole.getId());
+        Role role = rolesService.getRole(developerRole.getId());
 
         assertNotNull(role);
         assertEquals(developerRole, role);
@@ -67,8 +75,48 @@ class RolesServiceTest {
     @Test
     public void shouldFailToGetRoleWhenRoleIdDoesNotExist() {
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
-                () -> rolesService.GetRole(UUID_1));
+                () -> rolesService.getRole(UUID_1));
 
         assertEquals(format("Role %s not found", UUID_1), exception.getMessage());
     }
+
+    @Test
+    public void shouldFailToGetRoleWhenRoleIdIsNull() {
+        assertThrows(NullPointerException.class,
+                () -> rolesService.getRole(null));
+    }
+
+    @Test
+    public void shouldReturnRoleWhenMembershipExists() {
+        Membership membership = DEFAULT_MEMBERSHIP();
+        when(membershipsService.getMembership(any(), any())).thenReturn(Optional.of(membership));
+
+        Role role = rolesService.getRole(GIANNI_USER_UUID, ORDINARY_CORAL_LYNX_TEAM_UUID);
+
+        assertNotNull(role);
+        assertEquals(membership.getRole(), role);
+    }
+
+    @Test
+    public void shouldFailToGetRoleWhenMembershipDoesNotExists() {
+        when(membershipsService.getMembership(any(), any())).thenReturn(Optional.empty());
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
+                () -> rolesService.getRole(GIANNI_USER_UUID, ORDINARY_CORAL_LYNX_TEAM_UUID));
+
+        assertEquals("Role not found", exception.getMessage());
+    }
+
+    @Test
+    public void shouldFailToGetRoleWhenTeamMemberIdIsNull() {
+        assertThrows(NullPointerException.class,
+                () -> rolesService.getRole(null, ORDINARY_CORAL_LYNX_TEAM_UUID));
+    }
+
+    @Test
+    public void shouldFailToGetRoleWhenTeamIdIsNull() {
+        assertThrows(NullPointerException.class,
+                () -> rolesService.getRole(GIANNI_USER_UUID, null));
+    }
+
 }

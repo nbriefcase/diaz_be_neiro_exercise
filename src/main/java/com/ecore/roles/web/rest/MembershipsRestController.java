@@ -5,6 +5,8 @@ import com.ecore.roles.service.MembershipsService;
 import com.ecore.roles.web.MembershipsApi;
 import com.ecore.roles.web.dto.MembershipDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
@@ -24,35 +26,35 @@ public class MembershipsRestController implements MembershipsApi {
 
     @Override
     @PostMapping(
-            consumes = {"application/json"},
-            produces = {"application/json"})
+            consumes = {MediaType.APPLICATION_JSON_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<MembershipDto> assignRoleToMembership(
             @NotNull @Valid @RequestBody MembershipDto membershipDto) {
         Membership membership = membershipsService.assignRoleToMembership(membershipDto.toModel());
         return ResponseEntity
-                .status(200)
+                .status(HttpStatus.CREATED)
                 .body(fromModel(membership));
     }
 
     @Override
-    @PostMapping(
+    @GetMapping(
             path = "/search",
-            produces = {"application/json"})
+            produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<MembershipDto>> getMemberships(
             @RequestParam UUID roleId) {
 
         List<Membership> memberships = membershipsService.getMemberships(roleId);
 
-        List<MembershipDto> newMembershipDto = new ArrayList<>();
+        List<MembershipDto> membershipDtoList = new ArrayList<>();
 
         for (Membership membership : memberships) {
             MembershipDto membershipDto = fromModel(membership);
-            newMembershipDto.add(membershipDto);
+            membershipDtoList.add(membershipDto);
         }
 
         return ResponseEntity
-                .status(200)
-                .body(newMembershipDto);
+                .status(HttpStatus.OK)
+                .body(membershipDtoList);
     }
 
 }
