@@ -7,13 +7,14 @@ import com.ecore.roles.web.dto.MembershipDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import static com.ecore.roles.web.dto.MembershipDto.fromModel;
+import static java.util.stream.Collectors.toList;
 
 @RequiredArgsConstructor
 @RestController
@@ -30,12 +31,12 @@ public class MembershipsRestController implements MembershipsApi {
             @NotNull @Valid @RequestBody MembershipDto membershipDto) {
         Membership membership = membershipsService.assignRoleToMembership(membershipDto.toModel());
         return ResponseEntity
-                .status(200)
+                .status(201)
                 .body(fromModel(membership));
     }
 
     @Override
-    @PostMapping(
+    @GetMapping(
             path = "/search",
             produces = {"application/json"})
     public ResponseEntity<List<MembershipDto>> getMemberships(
@@ -43,12 +44,9 @@ public class MembershipsRestController implements MembershipsApi {
 
         List<Membership> memberships = membershipsService.getMemberships(roleId);
 
-        List<MembershipDto> newMembershipDto = new ArrayList<>();
-
-        for (Membership membership : memberships) {
-            MembershipDto membershipDto = fromModel(membership);
-            newMembershipDto.add(membershipDto);
-        }
+        List<MembershipDto> newMembershipDto = memberships.stream()
+                .map(MembershipDto::fromModel)
+                .collect(toList());
 
         return ResponseEntity
                 .status(200)

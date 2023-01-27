@@ -9,10 +9,7 @@ import lombok.Setter;
 @Builder
 @Getter
 @Setter
-public class ErrorResponse {
-
-    private final int status;
-    private final String error;
-    private final ErrorDetail[] violations;
-
+public class ErrorDetail {
+    private final String field;
+    private final String message;
 }

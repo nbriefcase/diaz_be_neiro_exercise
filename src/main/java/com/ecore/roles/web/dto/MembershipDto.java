@@ -3,14 +3,8 @@ package com.ecore.roles.web.dto;
 import com.ecore.roles.model.Membership;
 import com.ecore.roles.model.Role;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
@@ -28,20 +22,17 @@ public class MembershipDto {
     private UUID id;
 
     @JsonProperty
-    @Valid
-    @NotNull
+    @NotNull(message = "Role is required")
     @EqualsAndHashCode.Include
     private UUID roleId;
 
     @JsonProperty(value = "teamMemberId")
-    @Valid
-    @NotNull
+    @NotNull(message = "User is required")
     @EqualsAndHashCode.Include
     private UUID userId;
 
     @JsonProperty
-    @Valid
-    @NotNull
+    @NotNull(message = "Team is required")
     @EqualsAndHashCode.Include
     private UUID teamId;
 

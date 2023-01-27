@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.retry.RetryCallback;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -17,21 +19,22 @@ import java.util.UUID;
 public class TeamsClient {
 
     private final RestTemplate restTemplate;
+    private final RetryTemplate retryTemplate;
     private final ClientsConfigurationProperties clientsConfigurationProperties;
 
     public ResponseEntity<Team> getTeam(UUID id) {
-        return restTemplate.exchange(
-                clientsConfigurationProperties.getTeamsApiHost() + "/" + id,
-                HttpMethod.GET,
-                null,
-                Team.class);
+        RetryCallback<ResponseEntity<Team>, RuntimeException> callback = context -> restTemplate.getForEntity(
+                clientsConfigurationProperties.getTeamsApiHost() + "/{id}",
+                Team.class,
+                id);
+        return retryTemplate.execute(callback);
     }
 
     public ResponseEntity<List<Team>> getTeams() {
-        return restTemplate.exchange(
+        return retryTemplate.execute(context -> restTemplate.exchange(
                 clientsConfigurationProperties.getTeamsApiHost(),
                 HttpMethod.GET,
                 null,
-                new ParameterizedTypeReference<>() {});
+                new ParameterizedTypeReference<>() {}));
     }
 }

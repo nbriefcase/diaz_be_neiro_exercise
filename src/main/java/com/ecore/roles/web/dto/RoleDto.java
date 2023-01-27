@@ -23,7 +23,7 @@ public class RoleDto {
     @JsonProperty
     private UUID id;
     @JsonProperty
-    @NotBlank
+    @NotBlank(message = "Name must not be empty")
     private String name;
 
     public static RoleDto fromModel(Role role) {

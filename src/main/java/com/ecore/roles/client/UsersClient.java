@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -17,21 +18,23 @@ import java.util.UUID;
 public class UsersClient {
 
     private final RestTemplate restTemplate;
+    private final RetryTemplate retryTemplate;
     private final ClientsConfigurationProperties clientsConfigurationProperties;
 
     public ResponseEntity<User> getUser(UUID id) {
-        return restTemplate.exchange(
-                clientsConfigurationProperties.getUsersApiHost() + "/" + id,
+        return retryTemplate.execute(context -> restTemplate.exchange(
+                clientsConfigurationProperties.getUsersApiHost() + "/{id}",
                 HttpMethod.GET,
                 null,
-                User.class);
+                User.class,
+                id));
     }
 
     public ResponseEntity<List<User>> getUsers() {
-        return restTemplate.exchange(
+        return retryTemplate.execute(context -> restTemplate.exchange(
                 clientsConfigurationProperties.getUsersApiHost(),
                 HttpMethod.GET,
                 null,
-                new ParameterizedTypeReference<>() {});
+                new ParameterizedTypeReference<>() {}));
     }
 }

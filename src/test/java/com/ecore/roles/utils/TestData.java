@@ -4,6 +4,8 @@ import com.ecore.roles.client.model.Team;
 import com.ecore.roles.client.model.User;
 import com.ecore.roles.model.Membership;
 import com.ecore.roles.model.Role;
+import com.ecore.roles.web.dto.TeamDto;
+import com.ecore.roles.web.dto.UserDto;
 import org.assertj.core.util.Lists;
 
 import java.util.UUID;
@@ -65,6 +67,21 @@ public class TestData {
         return ORDINARY_CORAL_LYNX_TEAM(true);
     }
 
+    public static TeamDto ORDINARY_CORAL_LYNX_TEAM_DTO(boolean full) {
+        TeamDto team = TeamDto.builder()
+                .id(ORDINARY_CORAL_LYNX_TEAM_UUID)
+                .name("System Team").build();
+        if (full) {
+            team.setTeamLeadId(UUID_1);
+            team.setTeamMemberIds(Lists.list(UUID_2, UUID_3, GIANNI_USER_UUID));
+        }
+        return team;
+    }
+
+    public static TeamDto ORDINARY_CORAL_LYNX_TEAM_DTO() {
+        return ORDINARY_CORAL_LYNX_TEAM_DTO(true);
+    }
+
     public static User GIANNI_USER(boolean full) {
         User user = User.builder()
                 .id(GIANNI_USER_UUID)
@@ -80,6 +97,23 @@ public class TestData {
 
     public static User GIANNI_USER() {
         return GIANNI_USER(true);
+    }
+
+    public static UserDto GIANNI_USER_DTO(boolean full) {
+        UserDto user = UserDto.builder()
+                .id(GIANNI_USER_UUID)
+                .displayName("gianniWehner").build();
+        if (full) {
+            user.setFirstName("Gianni");
+            user.setLastName("Wehner");
+            user.setAvatarUrl("https://cdn.fakercloud.com/avatars/rude_128.jpg");
+            user.setLocation("Brakusstad");
+        }
+        return user;
+    }
+
+    public static UserDto GIANNI_USER_DTO() {
+        return GIANNI_USER_DTO(true);
     }
 
     public static Membership DEFAULT_MEMBERSHIP() {
