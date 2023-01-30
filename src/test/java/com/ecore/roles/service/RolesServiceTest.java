@@ -2,7 +2,6 @@ package com.ecore.roles.service;
 
 import com.ecore.roles.exception.ResourceNotFoundException;
 import com.ecore.roles.model.Role;
-import com.ecore.roles.repository.MembershipRepository;
 import com.ecore.roles.repository.RoleRepository;
 import com.ecore.roles.service.impl.RolesServiceImpl;
 import org.junit.jupiter.api.Test;
@@ -13,8 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static com.ecore.roles.utils.TestData.DEVELOPER_ROLE;
-import static com.ecore.roles.utils.TestData.UUID_1;
+import static com.ecore.roles.utils.TestData.*;
 import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -31,10 +29,10 @@ class RolesServiceTest {
     private RoleRepository roleRepository;
 
     @Mock
-    private MembershipRepository membershipRepository;
+    private TeamsService teamsService;
 
     @Mock
-    private MembershipsService membershipsService;
+    private UsersService usersService;
 
     @Test
     public void shouldCreateRole() {
@@ -70,5 +68,25 @@ class RolesServiceTest {
                 () -> rolesService.GetRole(UUID_1));
 
         assertEquals(format("Role %s not found", UUID_1), exception.getMessage());
+    }
+
+    @Test
+    public void shouldFailToGetRoleWhenTeamIdDoesNotExist() {
+        when(teamsService.getTeam(UNREGISTERED_TEAM_UUID))
+                .thenThrow(new ResourceNotFoundException(DEFAULT_TEAM().getClass(), UNREGISTERED_TEAM_UUID));
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
+                () -> rolesService.getRoleByUserAndTeam(UUID_1, UNREGISTERED_TEAM_UUID));
+
+        assertEquals(format("Team %s not found", UNREGISTERED_TEAM_UUID), exception.getMessage());
+    }
+
+    @Test
+    public void shouldFailToGetRoleWhenUserIdDoesNotExist() {
+        when(usersService.getUser(UUID_1))
+                .thenThrow(new ResourceNotFoundException(GIANNI_USER().getClass(), UUID_1));
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
+                () -> rolesService.getRoleByUserAndTeam(UUID_1, UNREGISTERED_TEAM_UUID));
+
+        assertEquals(format("User %s not found", UUID_1), exception.getMessage());
     }
 }

@@ -12,6 +12,7 @@ import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
 import org.hamcrest.Matchers;
 
+import java.util.Objects;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
@@ -54,7 +55,7 @@ public class RestAssuredHelper {
 
     public static EcoreValidatableResponse getRole(UUID userId, UUID teamId) {
         return sendRequest(given()
-                .queryParam("teamMemberId", userId)
+                .queryParam("userId", userId)
                 .queryParam("teamId", teamId)
                 .when()
                 .get("/v1/roles/search")
@@ -62,18 +63,19 @@ public class RestAssuredHelper {
     }
 
     public static EcoreValidatableResponse createMembership(Membership membership) {
-        return sendRequest(givenNullableBody(MembershipDto.fromModel(membership))
-                .contentType(JSON)
-                .when()
-                .post("/v1/roles/memberships")
-                .then());
+        return sendRequest(
+                givenNullableBody(Objects.isNull(membership) ? null : MembershipDto.fromModel(membership))
+                        .contentType(JSON)
+                        .when()
+                        .post("/v1/memberships")
+                        .then());
     }
 
     public static EcoreValidatableResponse getMemberships(UUID roleId) {
         return sendRequest(given()
                 .queryParam("roleId", roleId)
                 .when()
-                .get("/v1/roles/memberships/search")
+                .get("/v1/memberships/search")
                 .then());
     }
 

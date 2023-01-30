@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -36,14 +37,12 @@ public class TeamDto {
     private List<UUID> teamMemberIds;
 
     public static TeamDto fromModel(Team team) {
-        if (team == null) {
-            return null;
-        }
-        return TeamDto.builder()
-                .id(team.getId())
-                .name(team.getName())
-                .teamLeadId(team.getTeamLeadId())
-                .teamMemberIds(team.getTeamMemberIds())
-                .build();
+        return Objects.isNull(team) ? null
+                : TeamDto.builder()
+                        .id(team.getId())
+                        .name(team.getName())
+                        .teamLeadId(team.getTeamLeadId())
+                        .teamMemberIds(team.getTeamMemberIds())
+                        .build();
     }
 }
