@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Objects;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -42,16 +43,14 @@ public class UserDto {
     private String location;
 
     public static UserDto fromModel(User user) {
-        if (user == null) {
-            return null;
-        }
-        return UserDto.builder()
-                .id(user.getId())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .displayName(user.getDisplayName())
-                .avatarUrl(user.getAvatarUrl())
-                .location(user.getLocation())
-                .build();
+        return Objects.isNull(user) ? null
+                : UserDto.builder()
+                        .id(user.getId())
+                        .firstName(user.getFirstName())
+                        .lastName(user.getLastName())
+                        .displayName(user.getDisplayName())
+                        .avatarUrl(user.getAvatarUrl())
+                        .location(user.getLocation())
+                        .build();
     }
 }

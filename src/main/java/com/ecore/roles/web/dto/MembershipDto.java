@@ -46,9 +46,6 @@ public class MembershipDto {
     private UUID teamId;
 
     public static MembershipDto fromModel(Membership membership) {
-        if (membership == null) {
-            return null;
-        }
         return MembershipDto.builder()
                 .id(membership.getId())
                 .roleId(ofNullable(membership.getRole()).map(Role::getId).orElse(null))

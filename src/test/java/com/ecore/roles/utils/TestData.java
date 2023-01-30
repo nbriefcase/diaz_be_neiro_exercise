@@ -6,6 +6,7 @@ import com.ecore.roles.model.Membership;
 import com.ecore.roles.model.Role;
 import org.assertj.core.util.Lists;
 
+import java.util.List;
 import java.util.UUID;
 
 public class TestData {
@@ -21,9 +22,13 @@ public class TestData {
 
     public static final UUID GIANNI_USER_UUID = UUID.fromString("fd282131-d8aa-4819-b0c8-d9e0bfb1b75c");
 
+    public static final UUID UNREGISTERED_USER_UUID = UUID.fromString("fd282131-d8aa-4819-b0c8-d9e0bfb1b76c");
+
     public static final UUID ORDINARY_CORAL_LYNX_TEAM_UUID =
             UUID.fromString("7676a4bf-adfe-415c-941b-1739af07039b");
 
+    public static final UUID UNREGISTERED_TEAM_UUID =
+            UUID.fromString("7676a4bf-adfe-415c-941b-1739af07088b");
     public static final UUID DEFAULT_MEMBERSHIP_UUID =
             UUID.fromString("98de61a0-b9e3-11ec-8422-0242ac120002");
 
@@ -98,6 +103,11 @@ public class TestData {
                 .userId(UUID_4)
                 .teamId(ORDINARY_CORAL_LYNX_TEAM_UUID)
                 .build();
+    }
+
+    public static Team DEFAULT_TEAM() {
+        return Team.builder()
+                .teamMemberIds(List.of(GIANNI_USER_UUID)).build();
     }
 
 }

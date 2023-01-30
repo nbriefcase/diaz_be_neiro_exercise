@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
+import java.util.Objects;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -27,13 +28,11 @@ public class RoleDto {
     private String name;
 
     public static RoleDto fromModel(Role role) {
-        if (role == null) {
-            return null;
-        }
-        return RoleDto.builder()
-                .id(role.getId())
-                .name(role.getName())
-                .build();
+        return Objects.isNull(role) ? null
+                : RoleDto.builder()
+                        .id(role.getId())
+                        .name(role.getName())
+                        .build();
     }
 
     public Role toModel() {

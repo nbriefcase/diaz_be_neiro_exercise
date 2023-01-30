@@ -126,7 +126,6 @@ public class MembershipsApiTests {
     void shouldFailToAssignRoleWhenMembershipIsInvalid() {
         Membership expectedMembership = INVALID_MEMBERSHIP();
         mockGetTeamById(mockServer, expectedMembership.getTeamId(), ORDINARY_CORAL_LYNX_TEAM());
-
         createMembership(expectedMembership)
                 .validate(400,
                         "Invalid 'Membership' object. The provided user doesn't belong to the provided team.");
