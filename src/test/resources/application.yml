@@ -1,3 +1,10 @@
 clients:
     users-api-host: http://test.com/users
     teams-api-host: http://test.com/teams
+
+retry:
+    maxAttempts: 3
+    initialInterval: 50
+    multiplier: 2.0
+    maxInterval: 3000
+    withRandom: true

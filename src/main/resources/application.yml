@@ -7,3 +7,10 @@ spring:
 clients:
   users-api-host: https://cgjresszgg.execute-api.eu-west-1.amazonaws.com/users
   teams-api-host: https://cgjresszgg.execute-api.eu-west-1.amazonaws.com/teams
+
+retry:
+  maxAttempts: 3
+  initialInterval: 50
+  multiplier: 2.0
+  maxInterval: 3000
+  withRandom: true

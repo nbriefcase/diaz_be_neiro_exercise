@@ -2,7 +2,9 @@ create table role
 (
     id   varchar(255) not null
         primary key,
-    name varchar(255) not null
+    name varchar(255) not null,
+        constraint UKhhwo2xtpfizpe7nfwbujde87d
+            unique (name)
 );
 
 create table membership

@@ -12,6 +12,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.validation.constraints.NotBlank;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -29,6 +30,7 @@ public class Role {
     private UUID id;
 
     @Column(nullable = false, unique = true)
+    @NotBlank(message = "Name must not be empty")
     private String name;
 
 }
